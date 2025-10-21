@@ -13,6 +13,14 @@ The main goal is to develop a quantitative analysis pipeline that combines:
 
 ## Structure
 - `notebooks/`: Jupyter notebooks for exploration modeling.
+    - `01_download_checks.ipynb` -> tests for the data inputs
+    - `02_exploratoyry_analysis.ipynb` -> fisrt analysis to find patterns and significants metrics
+    - `03_feature_engineering.ipynb` -> 
+    - `04_modeling.ipynb` -> 
 - `src/`: Reusable python modules.
-- `data/`: Raw and processed option data.
-- `outputs/`: Visualization and signal results.
+- `data/`: 
+    - `raw/`
+    - `processed/`: raw data after processing and validations
+    - `features/`
+
+- `outputs/`: Visualization and signal results. (WIP)
