@@ -1,6 +1,6 @@
 """
-yahoo.py -- Funciones de extracción y caché de datos spot y opciones de Yahoo Finance.
-Proyecto Chaos-IV_Signals ·  Python 3.12
+yahoo.py -- Funciones de extracción y caché de datos spot de Yahoo Finance.
+Proyecto Equity-Signals · Python 3.12
 """
 
 from __future__ import annotations
@@ -8,31 +8,24 @@ from pathlib import Path
 from typing import Literal
 import time
 import logging
-import pyarrow.feather as feather
 import pandas as pd
 import yfinance as yf   
-from datetime import datetime, timedelta
+from src.utils.config import load_config
 
 # -----------------------------------------------------------------------------------
 # Configuración global  ─────────────────────────────────────────────────────────────
 # -----------------------------------------------------------------------------------
-CACHE_SPOT_DIR = Path("data/raw/yahoo").resolve()
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+CACHE_SPOT_DIR = PROJECT_ROOT / "data" / "raw" / "yahoo"
 CACHE_SPOT_DIR.mkdir(parents=True, exist_ok=True)
 
 RATE_LIMIT_DELAY = 0.6  # yahoo solo deja 2 peticiones/s 
 DEFAULT_TZ = "Europe/Madrid"
 logger = logging.getLogger(__name__)
 
-START_DATE = (datetime.now() - timedelta(days=365*3)).strftime("%Y-%m-%d") # últimos 3 años
-END_DATE = (datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d") # ayer
-
-
-TKRS = [
-    "QQQ", "SPY", "SOXX", "SMH",            # ETFs importantes
-    "AMD", "NVDA", "INTC", "TSM",           # semiconductores     
-    "MSFT", "GOOGL", "AMZN", "META",        # tech macro-drivers
-    "^VIX", "JPY=X", "TWD=X", "EURUSD=X",   # volatilidad y divisas importantes
-    "HG=F", "BZ=F", "CL=F"]                  # commodities
+_cfg = load_config()
+START_DATE = _cfg["data"]["start_date"]
+END_DATE = _cfg["data"]["end_date"]
 
 # -----------------------------------------------------------------------------------
 # Funciones públicas    ─────────────────────────────────────────────────────────────
@@ -105,10 +98,6 @@ def update_cache(
 # Helpers privados      ─────────────────────────────────────────────────────────────
 # -----------------------------------------------------------------------------------
 
-OTHERS_TICKERS = {"QQQ", "SPY", "SOXX", "SMH",
-                  "^VIX", "JPY=X", "TWD=X", "EURUSD=X",
-                  "HG=F", "BZ=F", "CL=F"}
-
 def _spot_cache_path(tkr: str, iv: str) -> Path:
     tag = "latest"
     base_dir = CACHE_SPOT_DIR
@@ -128,5 +117,7 @@ def _write_parquet(df: pd. DataFrame, p: Path):
 # -----------------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    for tkr in TKRS:
+    cfg = load_config()
+    universe = cfg["data"]["tickers"] + cfg["data"].get("indexes", [])
+    for tkr in universe:
         update_cache(tkr, spot_intervals=["1d"])

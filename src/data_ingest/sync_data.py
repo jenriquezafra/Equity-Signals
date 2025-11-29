@@ -1,31 +1,27 @@
 """
-sync_data.py -- Script para obtener todos los datos del mercado a la vez.
-Proyecto Chaos-IV_Signals ·  Python 3.12
+sync_data.py -- Script para sincronizar todas las fuentes de datos del proyecto.
+Proyecto Equity-Signals · Python 3.12
 """
 
-from __future__ import annotations
-from pathlib import Path
-
-from yahoo import update_cache
-# ir poniendo el resto de funciones aquí
-
-
-TICKERS = ['SPY', 'QQQ', 'AAPL', 'NVDA', 'TSLA']
+from src.data_ingest.yahoo import update_cache
+from src.utils.config import load_config
 
 def _refresh_yahoo():
-    for tkr in TICKERS:
-        update_cache(tkr, spot_intervals=["1d"])        
+    cfg = load_config()
+    universe = cfg["data"]["tickers"] + cfg["data"].get("indexes", [])
+    for tkr in universe:
+        update_cache(tkr, spot_intervals=["1d"])
     print("Datos de Yahoo Finance actualizados.")
 
-
-
 def main():
+    # Yahoo Finance (spot OHLCV)
     _refresh_yahoo()
-    # poner el resto
+    # Aquí se podrían añadir otras fuentes en el futuro:
+    # _refresh_otras_fuentes()
     print("Todos los datos actualizados.")
-
 
 if __name__ == "__main__":
     main()
 
-    
+    # Ejecución:
+    # python -m src.data_ingest.sync_data  
