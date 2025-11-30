@@ -20,17 +20,17 @@ def _list_processed_files() -> Dict[str, Path]:
     """
     Detecta todos los ficheros procesados relevantes (yahoo) y devuelve
     un mapping {ticker: path}.
-    Se asume el patrón <ticker>_spot_1d_latest.parquet
+    Se asume el patrón <ticker>_1d_latest.parquet
     """
     files = PROCESSED_DIR.glob("*.parquet")
     mapping = {}
 
     for p in files:
         name = p.name
-        # ejemplo: AAPL_spot_1d_latest.parquet
-        if "_spot_" not in name:
+        # ejemplo: AAPL_1d_latest.parquet
+        if not name.endswith("_1d_latest.parquet"):
             continue
-        ticker = name.split("_spot_")[0]
+        ticker = name.replace("_1d_latest.parquet", "")
         mapping[ticker] = p
 
     return mapping
@@ -109,3 +109,6 @@ def build_ohlcv_panel() -> pd.DataFrame:
 
 if __name__ == "__main__":
     build_ohlcv_panel()
+
+# Ejecución
+# python -m src.processing.panel
