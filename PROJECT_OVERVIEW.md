@@ -44,7 +44,7 @@ src/
     modelling/
     backtest/
     utils/
-        config.py
+        config.py                               # Imports config.yaml as a dict. and other utilities
 
 tests/
 
@@ -77,6 +77,7 @@ Build train/validation/test splits according to config
 
 
 ### 5. Backtest
+
 
 ---
 ## 4. Configuration (config.yaml)
